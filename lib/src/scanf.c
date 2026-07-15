@@ -85,7 +85,7 @@ static int read_token(InputBuffer *ib, char *out, size_t max_len) {
     return (len > 0) ? (int)len : -1;
 }
 
-int scanf(const char *format, char **p, ...) {
+int ego_scanf(const char *format, char **p, ...) {
     va_list args;
     va_start(args, p);
 

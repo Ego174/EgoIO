@@ -70,7 +70,7 @@ static int format_output(char *out, size_t out_size, const char *str, int len,
     return (int)(out_ptr - out);
 }
 
-int printf(const char *format, char **p, ...) {
+int ego_printf(const char *format, char **p, ...) {
     va_list args;
     va_start(args, p);
 
