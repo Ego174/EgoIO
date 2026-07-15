@@ -10,6 +10,7 @@ utils.c - внутренние заголовки для EgoIO.
 
 #include "utils.h"
 #include <string.h>
+#include <limits.h>
 
 #ifdef _WIN32
 #include <io.h>
@@ -165,4 +166,91 @@ int parse_format_specifier(const char **format, SpecInfo *info, va_list *args) {
 
     *format = f;
     return 0;
+}
+
+// Число в строку
+int format_unsigned(unsigned long long num, int base, const char *alphabet, char *out, size_t out_size, const SpecInfo *info) {
+    if(!alphabet || !*alphabet) alphabet = default_alphabet;
+    if(base < 2 || base > 62) return -1;
+    if(strlen(alphabet) < (size_t)base) return -1;
+
+    char tmp[128];
+    int i = 0;
+    if(num == 0) tmp[i++] = alphabet[0];
+    else {
+        while(num > 0) {
+            tmp[i++] = alphabet[num % base];
+            num /= base;
+        }
+    }
+    if((size_t)i + 1 > out_size) return -1;
+    for(int j = 0; j < i; j++) out[j] = tmp[i - 1 - j];
+    out[i] = '\0';
+    return i;
+}
+
+// Число в строку
+int format_signed(long long num, int base, const char *alphabet, char *out, size_t out_size, const SpecInfo *info) {
+    unsigned long long unum;
+    int sign = 0;
+    if(num < 0) {
+        sign = 1;
+        unum = (unsigned long long)(-num);
+    }
+    else unum = (unsigned long long)num;
+    int res = format_unsigned(unum, base, alphabet, out + sign, out_size - sign, info);
+    if(res < 0) return -1;
+    if(sign) {
+        out[0] = '-';
+        res++;
+    }
+    return res;
+}
+
+// Строка в число
+int parse_unsigned_from_str(const char *str, int base, const char *alphabet, unsigned long long *out) {
+    if(!str || !*str) return -1;
+    if(!alphabet || !*alphabet) alphabet = default_alphabet;
+    if(base < 2 || base > 62) return -1;
+    if(strlen(alphabet) < (size_t)base) return -1;
+
+    const char *s = str;
+    unsigned long long val = 0;
+    int count = 0;
+    while(*s) {
+        const char *pos = strchr(alphabet, *s);
+        if(!pos) break;
+        int digit = (int)(pos - alphabet);
+        if(digit >= base) break;
+        if(val > (unsigned long long)(-1) / base) return -1;
+        val = val * base + digit;
+        s++;
+        count++;
+    }
+    if(count == 0) return -1;
+    *out = val;
+    return count;
+}
+
+// Строка в число
+int parse_signed_from_str(const char *str, int base, const char *alphabet, long long *out) {
+    const char *s = str;
+    int sign = 1;
+    if(*s == '-') {
+        sign = -1;
+        s++;
+    }
+    else if (*s == '+') s++;
+    unsigned long long uval;
+    int res = parse_unsigned_from_str(s, base, alphabet, &uval);
+    if(res < 0) return -1;
+    if(sign == 1) {
+        if(uval > (unsigned long long)LLONG_MAX) return -1;
+        *out = (long long)uval;
+    }
+    else {
+        if(uval > (unsigned long long)LLONG_MAX + 1ULL) return -1;
+        *out = -(long long)uval;
+    }
+    return res + (s - str);
 }
