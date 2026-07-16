@@ -152,7 +152,7 @@ int ego_printf(const char *format, char **p, ...) {
             case 'X': {
                 unsigned int val = va_arg(args, unsigned int);
                 unsigned long long ull = val;
-                const char *upper_alpha = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                const char *upper_alpha = "0123456789ABCDEF";
                 len = format_unsigned(ull, 16, upper_alpha, tmp, sizeof(tmp), &info);
                 if(len < 0) {
                     if(p) *p = (char*)f;
