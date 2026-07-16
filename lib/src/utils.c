@@ -1,11 +1,9 @@
 /*
-utils.c - внутренние заголовки для EgoIO.
+utils.c - вспомогательные функции для ввода/вывода и преобразований.
 
 Хаиров Егор Вадимович
 МК-101
 */
-
-// Вспомогательные функции для ввода/вывода и преобразований.
 
 #include "utils.h"
 #include <string.h>
@@ -24,10 +22,9 @@ static const char *default_alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDE
 
 // Вывод
 int console_write(const char *buf, size_t count) {
-    if (!buf || count == 0)
-        return 0;
+    if(!buf || count == 0) return 0;
 
-    if (console_write_ptr)
+    if(console_write_ptr)
         return console_write_ptr(buf, count);
 
 #ifdef _WIN32
@@ -45,20 +42,20 @@ int console_write(const char *buf, size_t count) {
 
 // Ввод
 int console_read(char *buf, size_t count) {
-    if (!buf || count == 0)
+    if(!buf || count == 0)
         return 0;
 
-    if (console_read_ptr)
+    if(console_read_ptr)
         return console_read_ptr(buf, count);
 
 #ifdef _WIN32
     ssize_t res = _read(0, buf, count);
-    if (res < 0)
+    if(res < 0)
         return -1;
     return (int)res;
 #else
     ssize_t res = read(0, buf, count);
-    if (res < 0)
+    if(res < 0)
         return -1;
     return (int)res;
 #endif
@@ -110,7 +107,7 @@ int parse_format_specifier(const char **format, SpecInfo *info, va_list *args) {
             if(prec < 0) prec = 0;
             info->precision = prec;
         }
-        else if (*f >= '0' && *f <= '9') {
+        else if(*f >= '0' && *f <= '9') {
             int val = 0;
             while(*f >= '0' && *f <= '9') {
                 val = val * 10 + (*f - '0');
@@ -143,7 +140,7 @@ int parse_format_specifier(const char **format, SpecInfo *info, va_list *args) {
         if(*f == '{') {
             f++;
             const char *start = f;
-            while (*f && *f != '}') f++;
+            while(*f && *f != '}') f++;
             if(*f != '}') {
                 *format = f;
                 return -1;
@@ -252,7 +249,7 @@ int parse_signed_from_str(const char *str, int base, const char *alphabet, long 
         sign = -1;
         s++;
     }
-    else if (*s == '+') s++;
+    else if(*s == '+') s++;
     unsigned long long uval;
     int res = parse_unsigned_from_str(s, base, alphabet, &uval);
     if(res < 0) return -1;

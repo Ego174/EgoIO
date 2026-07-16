@@ -135,12 +135,12 @@ int ego_printf(const char *format, char **p, ...) {
                 unsigned int val = va_arg(args, unsigned int);
                 unsigned long long ull = val;
                 len = format_unsigned(ull, 16, NULL, tmp, sizeof(tmp), &info);
-                if (len < 0) {
-                    if (p) *p = (char*)f;
+                if(len < 0) {
+                    if(p) *p = (char*)f;
                     va_end(args);
                     return -1;
                 }
-                if (info.alternate_form && ull != 0) {
+                if(info.alternate_form && ull != 0) {
                     memmove(tmp + 2, tmp, len + 1);
                     tmp[0] = '0';
                     tmp[1] = 'x';
@@ -154,12 +154,12 @@ int ego_printf(const char *format, char **p, ...) {
                 unsigned long long ull = val;
                 const char *upper_alpha = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
                 len = format_unsigned(ull, 16, upper_alpha, tmp, sizeof(tmp), &info);
-                if (len < 0) {
-                    if (p) *p = (char*)f;
+                if(len < 0) {
+                    if(p) *p = (char*)f;
                     va_end(args);
                     return -1;
                 }
-                if (info.alternate_form && ull != 0) {
+                if(info.alternate_form && ull != 0) {
                     memmove(tmp + 2, tmp, len + 1);
                     tmp[0] = '0';
                     tmp[1] = 'X';
@@ -170,9 +170,9 @@ int ego_printf(const char *format, char **p, ...) {
             }
             case 's': {
                 const char *str = va_arg(args, const char*);
-                if (!str) str = "(null)";
+                if(!str) str = "(null)";
                 len = strlen(str);
-                if (len >= (int)sizeof(tmp)) len = sizeof(tmp) - 1;
+                if(len >= (int)sizeof(tmp)) len = sizeof(tmp) - 1;
                 memcpy(tmp, str, len);
                 tmp[len] = '\0';
                 is_signed = false;
@@ -191,8 +191,8 @@ int ego_printf(const char *format, char **p, ...) {
                 int base = info.custom_base ? info.custom_base : 10;
                 const char *alpha = info.custom_alphabet[0] ? info.custom_alphabet : NULL;
                 len = format_signed(val, base, alpha, tmp, sizeof(tmp), &info);
-                if (len < 0) {
-                    if (p) *p = (char*)f;
+                if(len < 0) {
+                    if(p) *p = (char*)f;
                     va_end(args);
                     return -1;
                 }
@@ -204,8 +204,8 @@ int ego_printf(const char *format, char **p, ...) {
                 int base = info.custom_base ? info.custom_base : 10;
                 const char *alpha = info.custom_alphabet[0] ? info.custom_alphabet : NULL;
                 len = format_unsigned(val, base, alpha, tmp, sizeof(tmp), &info);
-                if (len < 0) {
-                    if (p) *p = (char*)f;
+                if(len < 0) {
+                    if(p) *p = (char*)f;
                     va_end(args);
                     return -1;
                 }
@@ -213,20 +213,20 @@ int ego_printf(const char *format, char **p, ...) {
                 break;
             }
             default:
-                if (p) *p = (char*)f;
+                if(p) *p = (char*)f;
                 va_end(args);
                 return -1;
         }
 
         char out_buf[512];
         int out_len = format_output(out_buf, sizeof(out_buf), tmp, len, &info, is_signed);
-        if (out_len < 0) {
+        if(out_len < 0) {
             va_end(args);
             return -1;
         }
 
         int written = console_write(out_buf, out_len);
-        if (written < 0) {
+        if(written < 0) {
             va_end(args);
             return -1;
         }

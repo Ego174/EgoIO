@@ -20,19 +20,17 @@ static const char *input_data = NULL;
 static size_t input_pos = 0;
 
 static int test_write(const char *buf, size_t count) {
-    if (output_len + count >= sizeof(output_buf))
-        return -1;
+    if(output_len + count >= sizeof(output_buf)) return -1;
     memcpy(output_buf + output_len, buf, count);
     output_len += count;
     return (int)count;
 }
 
 static int test_read(char *buf, size_t count) {
-    if (!input_data) return -1;
+    if(!input_data) return -1;
     size_t i = 0;
-    while (i < count && input_data[input_pos] != '\0') {
+    while(i < count && input_data[input_pos] != '\0')
         buf[i++] = input_data[input_pos++];
-    }
     return (int)i;
 }
 

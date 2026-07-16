@@ -40,7 +40,7 @@ int main() {
 
     // Ошибка в формате
     ret = ego_printf("Bad specifier: %q\n", &err_ptr);
-    if (ret < 0) {
+    if(ret < 0) {
         ego_printf("Error: invalid format specifier at '%s'\n", &err_ptr, err_ptr);
     }
 
@@ -50,29 +50,31 @@ int main() {
 
     ego_printf("\nEnter an integer: ", &err_ptr);
     ret = ego_scanf("%d", &err_ptr, &num);
-    if (ret > 0) {
+    if(ret > 0) {
         ego_printf("You entered: %d\n", &err_ptr, num);
-    } else {
+    }
+    else {
         ego_printf("Scanf error, return: %d\n", &err_ptr, ret);
     }
 
     ego_printf("Enter a string: ", &err_ptr);
     ret = ego_scanf("%s", &err_ptr, str);
-    if (ret > 0) {
+    if(ret > 0) {
         ego_printf("You entered: '%s'\n", &err_ptr, str);
     }
 
     ego_printf("Enter a binary number (e.g., 1010): ", &err_ptr);
     ret = ego_scanf("%[2]B", &err_ptr, &ulnum);
-    if (ret > 0) {
+    if(ret > 0) {
         ego_printf("Decimal value: %[10]B\n", &err_ptr, ulnum);
-    } else {
+    }
+    else {
         ego_printf("Conversion error, return: %d\n", &err_ptr, ret);
     }
 
     ego_printf("Enter a number in base 2 with alphabet {ZA} (e.g., ZAZA): ", &err_ptr);
     ret = ego_scanf("%[2]{ZA}B", &err_ptr, &ulnum);
-    if (ret > 0) {
+    if(ret > 0) {
         ego_printf("Decimal value: %[10]B\n", &err_ptr, ulnum);
     }
 
