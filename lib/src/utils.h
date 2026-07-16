@@ -20,8 +20,8 @@ typedef struct {
     bool show_space;      // ' ' – пробел перед положительным числом
     bool alternate_form;  // '#' – 0x
 
-    int width;            // ширина поля
-    int precision;        // точность
+    unsigned int width;            // ширина поля
+    unsigned int precision;        // точность
 
     // Поля для пользовательских спецификаторов b/B (произвольное основание)
     int custom_base;          // основание

@@ -82,7 +82,7 @@ int parse_format_specifier(const char **format, SpecInfo *info, va_list *args) {
     // Ширина
     if(*f == '*') {
         f++;
-        int w = va_arg(*args, int);
+        unsigned int w = va_arg(*args, unsigned int);
         if(w < 0) {
             info->left_align = true;
             info->width = -w;
@@ -90,9 +90,18 @@ int parse_format_specifier(const char **format, SpecInfo *info, va_list *args) {
         else info->width = w;
     }
     else if(*f >= '0' && *f <= '9') {
-        int val = 0;
+        unsigned int val = 0;
         while(*f >= '0' && *f <= '9') {
-            val = val * 10 + (*f - '0');
+            if(val <= UINT_MAX / 10) val *= 10;
+            else {
+                *format = f;
+                return -1;
+            }
+            if(val <= UINT_MAX - (*f - '0')) val += *f - '0';
+            else {
+                *format = f;
+                return -1;
+            }
             f++;
         }
         info->width = val;
@@ -103,14 +112,23 @@ int parse_format_specifier(const char **format, SpecInfo *info, va_list *args) {
         f++;
         if(*f == '*') {
             f++;
-            int prec = va_arg(*args, int);
+            unsigned int prec = va_arg(*args, unsigned int);
             if(prec < 0) prec = 0;
             info->precision = prec;
         }
         else if(*f >= '0' && *f <= '9') {
-            int val = 0;
+            unsigned int val = 0;
             while(*f >= '0' && *f <= '9') {
-                val = val * 10 + (*f - '0');
+                if(val <= UINT_MAX / 10) val *= 10;
+                else {
+                    *format = f;
+                    return -1;
+                }
+                if(val <= UINT_MAX - (*f - '0')) val += *f - '0';
+                else {
+                    *format = f;
+                    return -1;
+                }
                 f++;
             }
             info->precision = val;
@@ -128,6 +146,10 @@ int parse_format_specifier(const char **format, SpecInfo *info, va_list *args) {
         }
         while(*f >= '0' && *f <= '9') {
             base = base * 10 + (*f - '0');
+            if(base > 62) {
+                *format = f;
+                return -1;
+            }
             f++;
         }
         if(*f != ']') {
@@ -152,6 +174,14 @@ int parse_format_specifier(const char **format, SpecInfo *info, va_list *args) {
             }
             memcpy(info->custom_alphabet, start, len);
             info->custom_alphabet[len] = '\0';
+            for(int i = 0; i < len; ++i) {
+                for(int j = i + 1; j < len; ++j) {
+                    if(info->custom_alphabet[i] == info->custom_alphabet[j]) {
+                        *format = f - len + j;
+                        return -1;
+                    }
+                }
+            }
             f++;
         }
         else info->custom_alphabet[0] = '\0';
