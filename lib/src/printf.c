@@ -131,25 +131,38 @@ int ego_printf(const char *format, char **p, ...) {
                 is_signed = false;
                 break;
             }
-            case 'x':
-            case 'X': {
+            case 'x': {
                 unsigned int val = va_arg(args, unsigned int);
                 unsigned long long ull = val;
-                int base = 16;
-                const char *alpha = NULL;
-                len = format_unsigned(ull, base, alpha, tmp, sizeof(tmp), &info);
-                if(len < 0) {
-                    if(p) *p = (char*)f;
+                len = format_unsigned(ull, 16, NULL, tmp, sizeof(tmp), &info);
+                if (len < 0) {
+                    if (p) *p = (char*)f;
                     va_end(args);
                     return -1;
                 }
-                if(info.alternate_form && ull != 0) {
-                    char prefix[3] = {0};
-                    if(info.specifier == 'x') {prefix[0] = '0'; prefix[1] = 'x';}
-                    else {prefix[0] = '0'; prefix[1] = 'X';}
+                if (info.alternate_form && ull != 0) {
                     memmove(tmp + 2, tmp, len + 1);
-                    tmp[0] = prefix[0];
-                    tmp[1] = prefix[1];
+                    tmp[0] = '0';
+                    tmp[1] = 'x';
+                    len += 2;
+                }
+                is_signed = false;
+                break;
+            }
+            case 'X': {
+                unsigned int val = va_arg(args, unsigned int);
+                unsigned long long ull = val;
+                const char *upper_alpha = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                len = format_unsigned(ull, 16, upper_alpha, tmp, sizeof(tmp), &info);
+                if (len < 0) {
+                    if (p) *p = (char*)f;
+                    va_end(args);
+                    return -1;
+                }
+                if (info.alternate_form && ull != 0) {
+                    memmove(tmp + 2, tmp, len + 1);
+                    tmp[0] = '0';
+                    tmp[1] = 'X';
                     len += 2;
                 }
                 is_signed = false;
