@@ -17,12 +17,18 @@ utils.c - внутренние заголовки для EgoIO.
 #include <unistd.h>
 #endif
 
+int (*console_write_ptr)(const char*, size_t) = NULL;
+int (*console_read_ptr)(char*, size_t) = NULL;
+
 static const char *default_alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 // Вывод
 int console_write(const char *buf, size_t count) {
     if (!buf || count == 0)
         return 0;
+
+    if (console_write_ptr)
+        return console_write_ptr(buf, count);
 
 #ifdef _WIN32
     ssize_t res = _write(1, buf, count);
@@ -41,6 +47,9 @@ int console_write(const char *buf, size_t count) {
 int console_read(char *buf, size_t count) {
     if (!buf || count == 0)
         return 0;
+
+    if (console_read_ptr)
+        return console_read_ptr(buf, count);
 
 #ifdef _WIN32
     ssize_t res = _read(0, buf, count);

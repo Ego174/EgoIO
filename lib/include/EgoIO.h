@@ -9,5 +9,5 @@ EgoIO.h - публичный интерфейс библиотеки EgoIO.
 
 #include <stdarg.h>
 
-int printf(const char *format, char **p, ...);
-int scanf(const char *format, char **p, ...);
+int ego_printf(const char *format, char **p, ...);
+int ego_scanf(const char *format, char **p, ...);
