@@ -60,9 +60,7 @@ static void unget_char(InputBuffer *ib, int ch) {
 
 static void skip_whitespace(InputBuffer *ib) {
     int ch;
-    while((ch = get_char(ib)) != EOF && is_space(ch)) {
-        // пропускаем
-    }
+    while((ch = get_char(ib)) != EOF && is_space(ch)) {}
     if(ch != EOF)
         unget_char(ib, ch);
 }
@@ -101,7 +99,7 @@ int ego_scanf(const char *format, char **p, ...) {
         // Пропускаем пробелы в формате
         if(is_space(*f)) {
             skip_whitespace(&ib);
-            while (is_space(*f)) f++;
+            while(is_space(*f)) f++;
             continue;
         }
 
